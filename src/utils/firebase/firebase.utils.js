@@ -1,20 +1,18 @@
-// Import Firebase App and Auth SDK
 import { initializeApp } from 'firebase/app';
+
 import {
-  getAuth, // Get the authentication service for the app
-  signInWithPopup, // Sign in with a popup
-  GoogleAuthProvider, // Google authentication provider
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
 } from 'firebase/auth';
 
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 
-// TEST Part
-// logger true/false
-const isLogEnabled = false;
-
-// Firebase app configuration
+// Initialize Firebase app with configuration
 const firebaseConfig = {
   apiKey: 'AIzaSyAgpB3H88yROKntZ2ey9ngeTrE4YqhBwqo',
   authDomain: 'crwn-clothig-v3-db.firebaseapp.com',
@@ -23,35 +21,29 @@ const firebaseConfig = {
   messagingSenderId: '737905056393',
   appId: '1:737905056393:web:7465878998e061a88a0458',
 };
-
-// Initialize Firebase app
 const firebaseApp = initializeApp(firebaseConfig);
-if (isLogEnabled) {
-  console.log('firebaseApp:', firebaseApp);
-}
 
-// Create a Google authentication provider instance
+// Create a GoogleAuthProvider object with custom parameters
 const googleProvider = new GoogleAuthProvider();
-
-// Set custom parameters for the provider instance
 googleProvider.setCustomParameters({
   promt: 'select_account',
 });
 
-// Export the authentication service for the app
+// Export Firebase authentication and Firestore database instances
 export const auth = getAuth();
-
-// Export a function to sign in with Google using a popup
-export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider);
-
 export const db = getFirestore();
 
 /**
- * Creates a user document in Firestore if one does not already exist for the provided user authentication data.
- *
- * @async
- * @param {firebase.User} userAuth - The user authentication data.
- * @returns {Promise<firebase.firestore.DocumentReference>} A Promise that resolves with the user document reference in Firestore.
+ * Sign in using Google popup authentication.
+ * @returns Promise containing the user's authentication data.
+ */
+export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider);
+
+/**
+ * Creates a Firestore document for the user with additional information.
+ * @param {Object} userAuth - The user's authentication data.
+ * @param {Object} additionalInformation - Additional information to store in the document.
+ * @returns Promise containing a reference to the Firestore document.
  */
 export const createUserDocumentFromAuth = async (
   userAuth,
@@ -61,13 +53,7 @@ export const createUserDocumentFromAuth = async (
 
   const userDocRef = doc(db, 'users', userAuth.uid);
   const userSnapshot = await getDoc(userDocRef);
-  if (isLogEnabled) {
-    console.log('userDocRef:', userDocRef);
-    console.log('userSnapshot:', userSnapshot);
-  }
 
-  // if user data does NOT exist
-  // create/set the document with the data from userAuth in my collection
   if (!userSnapshot.exists()) {
     const { displayName, email } = userAuth;
     const createdAt = new Date();
@@ -79,24 +65,50 @@ export const createUserDocumentFromAuth = async (
         createdAt,
         ...additionalInformation,
       });
-      console.log('new user created');
     } catch (error) {
       console.error(`💥 error while setting user ${error.message}`);
     }
   }
 
-  // if user data does exist, return userDocRef
-  console.log('User exist');
   return userDocRef;
 };
 
+/**
+ * Creates a user account using email and password.
+ * @param {string} email - The user's email.
+ * @param {string} password - The user's password.
+ * @returns Promise containing the user's authentication data.
+ */
 export const createAuthUserWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return;
 
   return await createUserWithEmailAndPassword(auth, email, password);
 };
+
+/**
+ * Signs in a user using email and password.
+ * @param {string} email - The user's email.
+ * @param {string} password - The user's password.
+ * @returns Promise containing the user's authentication data.
+ */
 export const signInAuthUserWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return;
 
   return await signInWithEmailAndPassword(auth, email, password);
+};
+
+/**
+ * Signs out the current user.
+ * @returns Promise containing the result of the sign out operation.
+ */
+export const signOutUser = async () => await signOut(auth);
+
+/**
+ * Listens for changes in the user's authentication state.
+ * @param {function} callback - The callback function to execute when the authentication state changes.
+ * @returns Function to stop listening for authentication state changes.
+ */
+export const onAuthStateChangedListener = (callback) => {
+  if (!callback) return;
+  return onAuthStateChanged(auth, callback);
 };

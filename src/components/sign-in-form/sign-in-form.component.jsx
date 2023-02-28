@@ -3,8 +3,8 @@ import './sign-in-form.styles.scss';
 import Button from '../button/button.component';
 
 import { useState } from 'react';
+
 import {
-  createAuthUserWithEmailAndPassword,
   createUserDocumentFromAuth,
   signInWithGooglePopup,
   signInAuthUserWithEmailAndPassword,
@@ -24,18 +24,18 @@ const SignInForm = () => {
   const resetFormFields = () => setFormFields(defaultFormFields);
 
   const signInWithGoogle = async () => {
-    const responce = await signInWithGooglePopup();
-    const { user } = responce;
-    const userDocRef = await createUserDocumentFromAuth(user);
-    console.log('userDocRef:', userDocRef);
+    try {
+      await signInWithGooglePopup(); // in respocre i need only UserCred~l.user
+    } catch (error) {
+      console.error(`Error during google sign-in: ${error.message}`);
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      const responce = await signInAuthUserWithEmailAndPassword(email, password);
-      console.log('responce:', responce);
+      /*const { user } = */ await signInAuthUserWithEmailAndPassword(email, password);
       resetFormFields();
     } catch (error) {
       switch (error.code) {
@@ -97,6 +97,3 @@ const SignInForm = () => {
 };
 
 export default SignInForm;
-
-// <input type="text" name="password" required pattern="(?=.*\d)(?=.*[A-Z]).{6,}" title="Please enter a password with at least 6 characters, 1 number, and 1 capital letter">
-// <input type="password" id="password" name="password" required pattern=".{6,}" title="Password must be at least 6 characters long.">

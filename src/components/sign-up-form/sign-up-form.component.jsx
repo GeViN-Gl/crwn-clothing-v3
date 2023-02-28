@@ -3,6 +3,7 @@ import './sign-up-form.styles.scss';
 import Button from '../button/button.component';
 
 import { useState } from 'react';
+
 import {
   createAuthUserWithEmailAndPassword,
   createUserDocumentFromAuth,
@@ -37,10 +38,10 @@ const SignUpForm = () => {
       );
       const { user } = responceWithUserCredentials;
 
-      const userDocRef = await createUserDocumentFromAuth(user, {
+      /*const userDocRef = */ await createUserDocumentFromAuth(user, {
         displayName: displayName,
       });
-      console.log('userDocRef:', userDocRef);
+
       resetFormFields();
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
@@ -106,6 +107,3 @@ const SignUpForm = () => {
 };
 
 export default SignUpForm;
-
-// <input type="text" name="password" required pattern="(?=.*\d)(?=.*[A-Z]).{6,}" title="Please enter a password with at least 6 characters, 1 number, and 1 capital letter">
-// <input type="password" id="password" name="password" required pattern=".{6,}" title="Password must be at least 6 characters long.">
