@@ -5,7 +5,7 @@ import Button from '../button/button.component';
 import { useState } from 'react';
 
 import {
-  createUserDocumentFromAuth,
+  // createUserDocumentFromAuth,
   signInWithGooglePopup,
   signInAuthUserWithEmailAndPassword,
 } from '../../utils/firebase/firebase.utils';
