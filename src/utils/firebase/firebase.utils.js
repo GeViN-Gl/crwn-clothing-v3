@@ -10,7 +10,16 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  writeBatch,
+  query,
+  getDocs,
+} from 'firebase/firestore';
 
 // Initialize Firebase app with configuration
 const firebaseConfig = {
@@ -21,7 +30,7 @@ const firebaseConfig = {
   messagingSenderId: '737905056393',
   appId: '1:737905056393:web:7465878998e061a88a0458',
 };
-const firebaseApp = initializeApp(firebaseConfig);
+export const firebaseApp = initializeApp(firebaseConfig);
 
 // Create a GoogleAuthProvider object with custom parameters
 const googleProvider = new GoogleAuthProvider();
@@ -32,6 +41,50 @@ googleProvider.setCustomParameters({
 // Export Firebase authentication and Firestore database instances
 export const auth = getAuth();
 export const db = getFirestore();
+
+/**
+ * Adds a collection and documents to a Firestore database using a batch write.
+ * @param {string} collectionKey - The name of the collection to add.
+ * @param {Object[]} objectsToAdd - The array of objects to add as documents.
+ * @param {string} field - The name of the field to use as the document ID.
+ * @returns {Promise<void>} A promise that resolves when the batch is committed.
+ */
+export const addCollectionAndDocuments = async (collectionKey, objectsToAdd, field) => {
+  const collectionRef = collection(db, collectionKey);
+  const batch = writeBatch(db);
+
+  objectsToAdd.forEach((object) => {
+    const docRef = doc(collectionRef, object[field].toLowerCase());
+    batch.set(docRef, object);
+  });
+
+  await batch.commit();
+  console.log(`batch done`);
+};
+
+/**
+ * Gets categories and documents from a Firestore collection.
+ * @returns {Promise<Object>} A promise that resolves to an object mapping category titles to items arrays.
+ */
+export const getCategoriesAndDocuments = async () => {
+  const collectionKey = 'categories';
+  const collectionRef = collection(db, collectionKey);
+
+  // Create a query to get all documents from the collection
+  const q = query(collectionRef);
+
+  // Execute the query and get a snapshot of the documents
+  const querySnapShot = await getDocs(q);
+
+  // Reduce the snapshot to an object mapping category titles to items arrays
+  const categoryMap = querySnapShot.docs.reduce((acc, docSnapshot) => {
+    const { title, items } = docSnapshot.data();
+    acc[title.toLowerCase()] = items;
+    return acc;
+  }, {});
+
+  return categoryMap;
+};
 
 /**
  * Sign in using Google popup authentication.
