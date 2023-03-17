@@ -1,3 +1,4 @@
+/*
 import { createContext, useEffect, useReducer } from 'react';
 import { createAction } from '../utils/reducer/reducer.util';
 
@@ -15,7 +16,9 @@ export const UserContext = createContext({
 export const USER_ACTION_TYPES = {
   SET_CURRENT_USER: 'SET_CURRENT_USER',
 };
-
+const INITIAL_STATE = {
+  currentUser: null,
+};
 const userReducer = (state, action) => {
   const { type, payload } = action;
 
@@ -29,10 +32,6 @@ const userReducer = (state, action) => {
     default:
       throw new Error(`Unhadled type ${type} in userReducer`);
   }
-};
-
-const INITIAL_STATE = {
-  currentUser: null,
 };
 
 export const UserProvider = ({ children }) => {
@@ -63,3 +62,4 @@ export const UserProvider = ({ children }) => {
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
+*/

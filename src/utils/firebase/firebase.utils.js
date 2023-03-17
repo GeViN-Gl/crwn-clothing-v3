@@ -49,7 +49,11 @@ export const db = getFirestore();
  * @param {string} field - The name of the field to use as the document ID.
  * @returns {Promise<void>} A promise that resolves when the batch is committed.
  */
-export const addCollectionAndDocuments = async (collectionKey, objectsToAdd, field) => {
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  objectsToAdd,
+  field
+) => {
   const collectionRef = collection(db, collectionKey);
   const batch = writeBatch(db);
 
@@ -77,20 +81,23 @@ export const getCategoriesAndDocuments = async () => {
   const querySnapShot = await getDocs(q);
 
   // Reduce the snapshot to an object mapping category titles to items arrays
-  const categoryMap = querySnapShot.docs.reduce((acc, docSnapshot) => {
-    const { title, items } = docSnapshot.data();
-    acc[title.toLowerCase()] = items;
-    return acc;
-  }, {});
+  return querySnapShot.docs.map((docSnapshot) => docSnapshot.data());
+  // categoryMap = querySnapShot.docs
+  // .reduce((acc, docSnapshot) => {
+  //   const { title, items } = docSnapshot.data();
+  //   acc[title.toLowerCase()] = items;
+  //   return acc;
+  // }, {});
 
-  return categoryMap;
+  // return categoryMap;
 };
 
 /**
  * Sign in using Google popup authentication.
  * @returns Promise containing the user's authentication data.
  */
-export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider);
+export const signInWithGooglePopup = () =>
+  signInWithPopup(auth, googleProvider);
 
 /**
  * Creates a Firestore document for the user with additional information.
