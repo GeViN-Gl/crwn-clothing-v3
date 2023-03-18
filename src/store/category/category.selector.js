@@ -26,3 +26,4 @@ export const selectCategoriesMap = createSelector(
     }, {});
   }
 );
+//TODO clean console.logs
