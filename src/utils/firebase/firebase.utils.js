@@ -70,8 +70,10 @@ export const addCollectionAndDocuments = async (
  * Gets categories and documents from a Firestore collection.
  * @returns {Promise<Object>} A promise that resolves to an object mapping category titles to items arrays.
  */
-export const getCategoriesAndDocuments = async () => {
-  const collectionKey = 'categories';
+export const getCategoriesAndDocuments = async (
+  collectionKey = 'categories'
+) => {
+  // const collectionKey = 'categories';
   const collectionRef = collection(db, collectionKey);
 
   // Create a query to get all documents from the collection
@@ -130,7 +132,7 @@ export const createUserDocumentFromAuth = async (
     }
   }
 
-  return userDocRef;
+  return userSnapshot;
 };
 
 /**
@@ -171,4 +173,17 @@ export const signOutUser = async () => await signOut(auth);
 export const onAuthStateChangedListener = (callback) => {
   if (!callback) return;
   return onAuthStateChanged(auth, callback);
+};
+
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (userAuth) => {
+        unsubscribe();
+        resolve(userAuth);
+      },
+      reject
+    );
+  });
 };
