@@ -17,7 +17,7 @@ export const selectCategories = createSelector(
 export const selectCategoriesMap = createSelector(
   [selectCategories],
   (categories) => {
-    console.log(`memoized selectCategoriesMap fired`);
+    // console.log(`memoized selectCategoriesMap fired`);
     return categories.reduce((acc, category) => {
       // console.log(`memoized selectCategoriesMap reduce fn fired`);
       const { title, items } = category;
@@ -27,3 +27,8 @@ export const selectCategoriesMap = createSelector(
   }
 );
 //TODO clean console.logs
+
+export const selectCategoriesIsLoading = createSelector(
+  [selectCategoryReducer],
+  (categotiesSlice) => categotiesSlice.isLoading
+);
