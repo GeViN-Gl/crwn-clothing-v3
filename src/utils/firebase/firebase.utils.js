@@ -49,7 +49,11 @@ export const db = getFirestore();
  * @param {string} field - The name of the field to use as the document ID.
  * @returns {Promise<void>} A promise that resolves when the batch is committed.
  */
-export const addCollectionAndDocuments = async (collectionKey, objectsToAdd, field) => {
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  objectsToAdd,
+  field
+) => {
   const collectionRef = collection(db, collectionKey);
   const batch = writeBatch(db);
 
@@ -66,8 +70,10 @@ export const addCollectionAndDocuments = async (collectionKey, objectsToAdd, fie
  * Gets categories and documents from a Firestore collection.
  * @returns {Promise<Object>} A promise that resolves to an object mapping category titles to items arrays.
  */
-export const getCategoriesAndDocuments = async () => {
-  const collectionKey = 'categories';
+export const getCategoriesAndDocuments = async (
+  collectionKey = 'categories'
+) => {
+  // const collectionKey = 'categories';
   const collectionRef = collection(db, collectionKey);
 
   // Create a query to get all documents from the collection
@@ -77,20 +83,23 @@ export const getCategoriesAndDocuments = async () => {
   const querySnapShot = await getDocs(q);
 
   // Reduce the snapshot to an object mapping category titles to items arrays
-  const categoryMap = querySnapShot.docs.reduce((acc, docSnapshot) => {
-    const { title, items } = docSnapshot.data();
-    acc[title.toLowerCase()] = items;
-    return acc;
-  }, {});
+  return querySnapShot.docs.map((docSnapshot) => docSnapshot.data());
+  // categoryMap = querySnapShot.docs
+  // .reduce((acc, docSnapshot) => {
+  //   const { title, items } = docSnapshot.data();
+  //   acc[title.toLowerCase()] = items;
+  //   return acc;
+  // }, {});
 
-  return categoryMap;
+  // return categoryMap;
 };
 
 /**
  * Sign in using Google popup authentication.
  * @returns Promise containing the user's authentication data.
  */
-export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider);
+export const signInWithGooglePopup = () =>
+  signInWithPopup(auth, googleProvider);
 
 /**
  * Creates a Firestore document for the user with additional information.
@@ -123,7 +132,7 @@ export const createUserDocumentFromAuth = async (
     }
   }
 
-  return userDocRef;
+  return userSnapshot;
 };
 
 /**
@@ -164,4 +173,17 @@ export const signOutUser = async () => await signOut(auth);
 export const onAuthStateChangedListener = (callback) => {
   if (!callback) return;
   return onAuthStateChanged(auth, callback);
+};
+
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (userAuth) => {
+        unsubscribe();
+        resolve(userAuth);
+      },
+      reject
+    );
+  });
 };

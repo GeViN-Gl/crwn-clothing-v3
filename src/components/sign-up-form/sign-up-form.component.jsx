@@ -3,12 +3,15 @@ import { SignUpContainer } from './sign-up-form.styles';
 import Button from '../button/button.component';
 
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
+import { signUpStart } from '../../store/user/user.action';
+/*
 import {
   createAuthUserWithEmailAndPassword,
   createUserDocumentFromAuth,
 } from '../../utils/firebase/firebase.utils';
-
+*/
 import FormInput from '../form-input/form-input.component';
 
 const defaultFormFields = {
@@ -22,6 +25,8 @@ const SignUpForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { displayName, email, password, confirmPassword } = formFields;
 
+  const dispatch = useDispatch();
+
   const resetFormFields = () => setFormFields(defaultFormFields);
 
   const handleSubmit = async (event) => {
@@ -32,16 +37,7 @@ const SignUpForm = () => {
     }
 
     try {
-      const responceWithUserCredentials = await createAuthUserWithEmailAndPassword(
-        email,
-        password
-      );
-      const { user } = responceWithUserCredentials;
-
-      /*const userDocRef = */ await createUserDocumentFromAuth(user, {
-        displayName: displayName,
-      });
-
+      dispatch(signUpStart(email, password, displayName));
       resetFormFields();
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
@@ -65,42 +61,42 @@ const SignUpForm = () => {
       <span>Sign up with you email and password</span>
       <form onSubmit={handleSubmit}>
         <FormInput
-          label="Display Name"
+          label='Display Name'
           required
-          type="text"
+          type='text'
           onChange={handleChange}
-          name="displayName"
+          name='displayName'
           value={displayName}
         />
         <FormInput
-          label="Email"
+          label='Email'
           required
-          type="email"
+          type='email'
           onChange={handleChange}
-          name="email"
+          name='email'
           value={email}
         />
         <FormInput
-          label="Password"
+          label='Password'
           required
-          type="password"
+          type='password'
           onChange={handleChange}
-          name="password"
+          name='password'
           value={password}
-          pattern=".{6,}"
-          title="Password must be at least 6 characters long."
+          pattern='.{6,}'
+          title='Password must be at least 6 characters long.'
         />
         <FormInput
-          label="Confirm Password"
+          label='Confirm Password'
           required
-          type="password"
+          type='password'
           onChange={handleChange}
-          name="confirmPassword"
+          name='confirmPassword'
           value={confirmPassword}
-          pattern=".{6,}"
-          title="Password must be at least 6 characters long."
+          pattern='.{6,}'
+          title='Password must be at least 6 characters long.'
         />
-        <Button type="submit">Sign Up</Button>
+        <Button type='submit'>Sign Up</Button>
       </form>
     </SignUpContainer>
   );

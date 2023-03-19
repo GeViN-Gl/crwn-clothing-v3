@@ -1,16 +1,15 @@
 import { SignInContainer, ButtonsContainer } from './sign-in-form.styles';
+import FormInput from '../form-input/form-input.component';
 
 import Button, { BUTTON_TYPES_CLASSES } from '../button/button.component';
 
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import {
-  // createUserDocumentFromAuth,
-  signInWithGooglePopup,
-  signInAuthUserWithEmailAndPassword,
-} from '../../utils/firebase/firebase.utils';
-
-import FormInput from '../form-input/form-input.component';
+  googleSignInStart,
+  emailSignInStart,
+} from '../../store/user/user.action';
 
 const defaultFormFields = {
   email: '',
@@ -23,22 +22,18 @@ const SignInForm = () => {
 
   const resetFormFields = () => setFormFields(defaultFormFields);
 
+  const dispatch = useDispatch();
+
+  //TODO remove async
   const signInWithGoogle = async () => {
-    try {
-      await signInWithGooglePopup(); // in respocre i need only UserCred~l.user
-    } catch (error) {
-      console.error(`Error during google sign-in: ${error.message}`);
-    }
+    dispatch(googleSignInStart());
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      /*const { user } = */ await signInAuthUserWithEmailAndPassword(
-        email,
-        password
-      );
+      dispatch(emailSignInStart(email, password));
       resetFormFields();
     } catch (error) {
       switch (error.code) {
