@@ -1,6 +1,5 @@
 import { AnyAction } from 'redux';
 
-import { USER_ACTION_TYPES } from './user.types';
 import {
 	signInFailed,
 	signOutFailed,
@@ -23,7 +22,6 @@ const INITIAL_STATE: UserState = {
 };
 
 export const userReducer = (state = INITIAL_STATE, action: AnyAction) => {
-	const { type, payload } = action;
 	if (signInSuccess.match(action)) {
 		return {
 			...state,
