@@ -33,6 +33,11 @@
     "typescript": "^5.0.2",
     "web-vitals": "^2.1.4"
   },
+  "overrides": {
+    "react-scripts": {
+      "typescript": "^5"
+    }
+  },
   "scripts": {
     "start": "react-scripts start",
     "start-clear-console": "react-scripts start --clearConsole",
